@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block body %}
+  <h1>{{ t('schemes_page_title') }}</h1>
+  <p class="lede">{{ t('schemes_page_lede') }}</p>
+
+  <form class="card" method="post" action="{{ url_for('schemes_page') }}">
+    <label>{{ t('q_needs') }}</label>
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));">
+      {% for value, label in needs %}
+        <label style="font-weight:400; margin:0; display:flex; gap:8px; align-items:center;">
+          <input type="checkbox" name="needs" value="{{ value }}" style="width:auto;">
+          {{ label }}
+        </label>
+      {% endfor %}
+    </div>
+
+    <label for="gender">{{ t('q_gender') }}</label>
+    <select id="gender" name="gender">
+      <option value="">{{ t('opt_blank') }}</option>
+      {% for value, label in genders %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+    </select>
+
+    <label for="age_band">{{ t('q_age') }}</label>
+    <select id="age_band" name="age_band">
+      <option value="">{{ t('opt_blank') }}</option>
+      {% for value, label in ages %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+    </select>
+
+    <label for="state">{{ t('q_state') }}</label>
+    <select id="state" name="state">
+      <option value="">{{ t('opt_blank') }}</option>
+      {% for label, value in states %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+    </select>
+
+    <label for="area">{{ t('q_area') }}</label>
+    <select id="area" name="area">
+      <option value="">{{ t('opt_blank') }}</option>
+      {% for value, label in areas %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+    </select>
+
+    <label for="income_band">{{ t('q_income') }}</label>
+    <select id="income_band" name="income_band">
+      <option value="">{{ t('opt_blank') }}</option>
+      {% for value, label in incomes %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+    </select>
+
+    <label for="caste_category">{{ t('q_caste') }}</label>
+    <select id="caste_category" name="caste_category">
+      <option value="">{{ t('opt_blank') }}</option>
+      {% for value, label in castes %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+    </select>
+
+    <button type="submit">{{ t('schemes_submit') }}</button>
+  </form>
+{% endblock %}

@@ -1,0 +1,548 @@
+{
+  "_readme": [
+    "Government scheme dataset — §6 of the implementation plan.",
+    "",
+    "STATUS: 16 central schemes, each figure verified against an official source on the",
+    "date in its `last_verified` field. §6 asks for ~50; the remaining rows are human",
+    "research and are listed in tests/fixtures/schemes/REMAINING.md.",
+    "",
+    "THE RULE FOR ADDING A ROW: every number in `benefit_text` must appear on the page",
+    "at `source_url`. Not 'roughly', not 'as I remember it'. §6 is explicit about why —",
+    "a woman turned away at a bank counter because we sent her after a scheme that does",
+    "not exist, or quoted a ceiling that changed two budgets ago, is worse off than if",
+    "she had never asked us. If a figure cannot be verified, leave it out of the text",
+    "rather than approximating it.",
+    "",
+    "WHAT IS DELIBERATELY ABSENT: interest rates on the small-savings schemes (PPF,",
+    "SCSS, Post Office RD). The government revises them every quarter, so any rate",
+    "written here is wrong within three months. The structural facts — deposit limits,",
+    "tenure, who may open one — are stable and are stated; for the rate the user is sent",
+    "to the portal. Sukanya and MSSC do carry rates because their notified rates were",
+    "confirmed at verification time; treat them as the first thing to re-check.",
+    "",
+    "BEFORE ANY REAL DEPLOYMENT the whole dataset must be re-verified. Ceilings and",
+    "names change with every budget. Two examples found while building this file:",
+    "the PMJJBY premium is ₹436, not the ₹330 still shown on some government pages,",
+    "and PM-SVANidhi's tranches are now ₹15,000/₹25,000/₹50,000, not ₹10,000/₹20,000."
+  ],
+  "schemes": [
+    {
+      "id": "pm_vidyalakshmi",
+      "name": "PM Vidyalaxmi Education Loan Scheme",
+      "name_hi": "पीएम विद्यालक्ष्मी शिक्षा ऋण योजना",
+      "ministry": "Ministry of Education",
+      "level": "central",
+      "states": ["ALL"],
+      "category": "education",
+      "benefit_type": "loan",
+      "benefit_text": "Collateral-free, guarantor-free education loan for study at a recognised higher-education institution. For loans up to ₹7.5 lakh the government provides a credit guarantee covering 75% of any outstanding default, so banks can lend without security. If your family income is up to ₹8 lakh a year and you are not receiving another government scholarship or interest subsidy, you also get a 3% interest subsidy on loans up to ₹10 lakh during the moratorium period.",
+      "benefit_amount": 750000,
+      "eligibility": {
+        "gender": "any",
+        "age_min": 17,
+        "age_max": 35,
+        "income_max_annual": 800000,
+        "area": "both",
+        "caste_category": ["ANY"],
+        "purpose": ["education"],
+        "conditions": [
+          "Admission to a recognised quality higher-education institution",
+          "The 3% interest subsidy applies only if you receive no other government scholarship or interest subsidy"
+        ]
+      },
+      "documents_required": [
+        "Aadhaar",
+        "admission letter",
+        "income certificate",
+        "fee structure",
+        "bank account",
+        "Class 12 marksheet"
+      ],
+      "how_to_apply": "Apply once on the Vidya Lakshmi portal; participating banks respond through the same application.",
+      "application_url": "https://www.vidyalakshmi.co.in",
+      "helpline": "",
+      "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2071131",
+      "last_verified": "2026-08-03",
+      "application_difficulty": 3
+    },
+    {
+      "id": "pm_kisan",
+      "name": "PM Kisan Samman Nidhi (PM-KISAN)",
+      "name_hi": "पीएम किसान सम्मान निधि",
+      "ministry": "Ministry of Agriculture and Farmers Welfare",
+      "level": "central",
+      "states": ["ALL"],
+      "category": "farming",
+      "benefit_type": "subsidy",
+      "benefit_text": "Income support of ₹6,000 a year for landholding farmer families, paid directly into your bank account in three equal instalments of ₹2,000. There is nothing to repay.",
+      "benefit_amount": 6000,
+      "eligibility": {
+        "gender": "any",
+        "area": "both",
+        "caste_category": ["ANY"],
+        "purpose": ["farming"],
+        "conditions": [
+          "The family — husband, wife and minor children — must own cultivable land",
+          "Not available to income-tax payers, government employees or retired officials above Group D, professionals such as doctors, engineers, lawyers and chartered accountants, or pensioners drawing ₹10,000 a month or more"
+        ]
+      },
+      "documents_required": [
+        "Aadhaar",
+        "land record papers",
+        "bank account",
+        "mobile number"
+      ],
+      "how_to_apply": "Register through your village revenue officer or the Farmers Corner on the PM-KISAN portal.",
+      "application_url": "https://pmkisan.gov.in",
+      "helpline": "",
+      "source_url": "https://pmkisan.gov.in/",
+      "last_verified": "2026-08-03",
+      "application_difficulty": 2
+    },
+    {
+      "id": "kisan_credit_card",
+      "name": "Kisan Credit Card (KCC)",
+      "name_hi": "किसान क्रेडिट कार्ड",
+      "ministry": "Ministry of Agriculture and Farmers Welfare",
+      "level": "central",
+      "states": ["ALL"],
+      "category": "farming",
+      "benefit_type": "loan",
+      "benefit_text": "A running credit limit from a bank for seeds, fertiliser, labour and other crop costs, so you do not have to borrow from a private lender at the start of each season. You draw only what you need and pay interest only on that.",
+      "benefit_amount": null,
+      "eligibility": {
+        "gender": "any",
+        "area": "both",
+        "caste_category": ["ANY"],
+        "purpose": ["farming"],
+        "conditions": [
+          "Farmers who own or cultivate land, including tenant farmers, oral lessees and sharecroppers"
+        ]
+      },
+      "documents_required": ["Aadhaar", "land record papers", "bank account", "photograph"],
+      "how_to_apply": "Apply at any bank branch where you hold an account, or through the PM-KISAN portal's KCC link.",
+      "application_url": "https://pmkisan.gov.in",
+      "helpline": "",
+      "source_url": "https://pmkisan.gov.in/",
+      "last_verified": "2026-08-03",
+      "application_difficulty": 3
+    },
+    {
+      "id": "sukanya_samriddhi",
+      "name": "Sukanya Samriddhi Account",
+      "name_hi": "सुकन्या समृद्धि खाता",
+      "ministry": "Ministry of Finance",
+      "level": "central",
+      "states": ["ALL"],
+      "category": "savings",
+      "benefit_type": "savings",
+      "benefit_text": "A savings account for a girl child, opened any time before she turns 10. You can put in as little as ₹250 or as much as ₹1.5 lakh in a year. The notified rate at the time of checking was 8.2% a year, compounded yearly, and the interest is tax-free. Rates are revised by the government, so confirm the current one at the post office.",
+      "benefit_amount": null,
+      "eligibility": {
+        "gender": "any",
+        "area": "both",
+        "caste_category": ["ANY"],
+        "purpose": ["savings", "education"],
+        "conditions": [
+          "Opened by a guardian in the name of a girl child below the age of 10",
+          "One account per girl child, and up to two accounts per family"
+        ]
+      },
+      "documents_required": [
+        "girl child's birth certificate",
+        "guardian's Aadhaar",
+        "guardian's PAN",
+        "photograph"
+      ],
+      "how_to_apply": "Open the account at any post office or authorised bank branch.",
+      "application_url": "https://www.indiapost.gov.in/banking-services/savings",
+      "helpline": "",
+      "source_url": "https://www.nsiindia.gov.in/writereaddata/SchemeRules/SukanyaSamriddhiAccountSchemeRule.pdf",
+      "last_verified": "2026-08-03",
+      "application_difficulty": 1
+    },
+    {
+      "id": "mahila_samman_savings",
+      "name": "Mahila Samman Savings Certificate",
+      "name_hi": "महिला सम्मान बचत पत्र",
+      "ministry": "Ministry of Finance",
+      "level": "central",
+      "states": ["ALL"],
+      "category": "savings",
+      "benefit_type": "savings",
+      "benefit_text": "A two-year deposit for women and girls. You can put in from ₹1,000 up to ₹2 lakh, and it matures two years from the day you open it. The notified rate at the time of checking was 7.5% a year, compounded quarterly.",
+      "benefit_amount": null,
+      "eligibility": {
+        "gender": "female",
+        "area": "both",
+        "caste_category": ["ANY"],
+        "purpose": ["savings"],
+        "conditions": ["For a woman in her own name, or for a girl by her guardian"]
+      },
+      "documents_required": ["Aadhaar", "PAN", "photograph"],
+      "how_to_apply": "Open the account at any post office or an authorised public or private sector bank.",
+      "application_url": "https://www.indiapost.gov.in/banking-services/savings",
+      "helpline": "",
+      "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=1917668",
+      "last_verified": "2026-08-03",
+      "application_difficulty": 1
+    },
+    {
+      "id": "public_provident_fund",
+      "name": "Public Provident Fund (PPF)",
+      "name_hi": "सार्वजनिक भविष्य निधि",
+      "ministry": "Ministry of Finance",
+      "level": "central",
+      "states": ["ALL"],
+      "category": "savings",
+      "benefit_type": "savings",
+      "benefit_text": "A long-term government savings account that runs for 15 years, with tax-free interest and the option to take a loan against the balance or withdraw part of it after the early years. The interest rate is set by the government and revised every quarter, so ask at the post office or bank for the current one.",
+      "benefit_amount": null,
+      "eligibility": {
+        "gender": "any",
+        "area": "both",
+        "caste_category": ["ANY"],
+        "purpose": ["savings"],
+        "conditions": [
+          "Any resident individual may open one account in their own name",
+          "Runs for 15 years and can then be extended"
+        ]
+      },
+      "documents_required": ["Aadhaar", "PAN", "photograph"],
+      "how_to_apply": "Open the account at any post office or bank branch.",
+      "application_url": "https://www.indiapost.gov.in/banking-services/savings",
+      "helpline": "",
+      "source_url": "https://www.indiapost.gov.in/banking-services/savings",
+      "last_verified": "2026-08-03",
+      "application_difficulty": 1
+    },
+    {
+      "id": "senior_citizen_savings",
+      "name": "Senior Citizens' Savings Scheme",
+      "name_hi": "वरिष्ठ नागरिक बचत योजना",
+      "ministry": "Ministry of Finance",
+      "level": "central",
+      "states": ["ALL"],
+      "category": "savings",
+      "benefit_type": "savings",
+      "benefit_text": "A five-year deposit for people aged 60 and above, paying interest every quarter so it can be used as regular income. You can deposit from ₹1,000 up to ₹30 lakh. The rate is set by the government and revised quarterly — ask at the post office for the current one.",
+      "benefit_amount": null,
+      "eligibility": {
+        "gender": "any",
+        "age_min": 60,
+        "area": "both",
+        "caste_category": ["ANY"],
+        "purpose": ["savings", "pension"],
+        "conditions": ["Age 60 or above, with earlier entry allowed in some retirement cases"]
+      },
+      "documents_required": ["Aadhaar", "PAN", "age proof", "photograph"],
+      "how_to_apply": "Open the account at any post office or authorised bank branch.",
+      "application_url": "https://www.indiapost.gov.in/banking-services/savings",
+      "helpline": "",
+      "source_url": "https://www.nsiindia.gov.in/InternalPage.aspx?Id_Pk=62",
+      "last_verified": "2026-08-03",
+      "application_difficulty": 1
+    },
+    {
+      "id": "atal_pension_yojana",
+      "name": "Atal Pension Yojana (APY)",
+      "name_hi": "अटल पेंशन योजना",
+      "ministry": "Ministry of Finance",
+      "level": "central",
+      "states": ["ALL"],
+      "category": "pension",
+      "benefit_type": "pension",
+      "benefit_text": "A guaranteed monthly pension from the age of 60 — you choose ₹1,000, ₹2,000, ₹3,000, ₹4,000 or ₹5,000 a month, and what you pay in depends on the pension you pick and the age you join. Built for people without a workplace pension.",
+      "benefit_amount": null,
+      "eligibility": {
+        "gender": "any",
+        "age_min": 18,
+        "age_max": 40,
+        "area": "both",
+        "caste_category": ["ANY"],
+        "purpose": ["pension", "savings"],
+        "conditions": [
+          "Any citizen of India aged 18 to 40 with a savings bank account",
+          "Contributions continue until the age of 60"
+        ]
+      },
+      "documents_required": ["Aadhaar", "savings bank account", "mobile number"],
+      "how_to_apply": "Enrol at the bank or post office where you hold your savings account.",
+      "application_url": "https://www.npscra.nsdl.co.in/scheme-details.php",
+      "helpline": "1800-110-069",
+      "source_url": "https://www.jansuraksha.gov.in/Files/APY/ENGLISH/APY.pdf",
+      "last_verified": "2026-08-03",
+      "application_difficulty": 2
+    },
+    {
+      "id": "pmjjby",
+      "name": "PM Jeevan Jyoti Bima Yojana (PMJJBY)",
+      "name_hi": "प्रधानमंत्री जीवन ज्योति बीमा योजना",
+      "ministry": "Ministry of Finance",
+      "level": "central",
+      "states": ["ALL"],
+      "category": "health",
+      "benefit_type": "insurance",
+      "benefit_text": "Life cover of ₹2 lakh paid to your family if you die from any cause, for a premium of ₹436 a year taken automatically from your bank account. That is about ₹1.25 a day.",
+      "benefit_amount": 200000,
+      "eligibility": {
+        "gender": "any",
+        "age_min": 18,
+        "age_max": 50,
+        "area": "both",
+        "caste_category": ["ANY"],
+        "purpose": ["health", "insurance"],
+        "conditions": [
+          "Aged 18 to 50 with a bank or post office account",
+          "You must consent to the premium being auto-debited each year"
+        ]
+      },
+      "documents_required": ["Aadhaar", "bank account", "consent form"],
+      "how_to_apply": "Ask at the bank or post office branch where you hold your account.",
+      "application_url": "https://www.jansuraksha.gov.in",
+      "helpline": "1800-180-1111",
+      "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=1829772",
+      "last_verified": "2026-08-03",
+      "application_difficulty": 1
+    },
+    {
+      "id": "pmsby",
+      "name": "PM Suraksha Bima Yojana (PMSBY)",
+      "name_hi": "प्रधानमंत्री सुरक्षा बीमा योजना",
+      "ministry": "Ministry of Finance",
+      "level": "central",
+      "states": ["ALL"],
+      "category": "health",
+      "benefit_type": "insurance",
+      "benefit_text": "Accident cover of ₹2 lakh for death or permanent total disability, and ₹1 lakh for partial permanent disability, for a premium of ₹20 a year taken from your bank account.",
+      "benefit_amount": 200000,
+      "eligibility": {
+        "gender": "any",
+        "age_min": 18,
+        "age_max": 70,
+        "area": "both",
+        "caste_category": ["ANY"],
+        "purpose": ["health", "insurance"],
+        "conditions": [
+          "Aged 18 to 70 with a bank or post office account",
+          "You must consent to the premium being auto-debited each year"
+        ]
+      },
+      "documents_required": ["Aadhaar", "bank account", "consent form"],
+      "how_to_apply": "Ask at the bank or post office branch where you hold your account.",
+      "application_url": "https://www.jansuraksha.gov.in",
+      "helpline": "1800-180-1111",
+      "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=1829772",
+      "last_verified": "2026-08-03",
+      "application_difficulty": 1
+    },
+    {
+      "id": "ayushman_bharat_pmjay",
+      "name": "Ayushman Bharat PM Jan Arogya Yojana (PM-JAY)",
+      "name_hi": "आयुष्मान भारत प्रधानमंत्री जन आरोग्य योजना",
+      "ministry": "Ministry of Health and Family Welfare",
+      "level": "central",
+      "states": ["ALL"],
+      "category": "health",
+      "benefit_type": "insurance",
+      "benefit_text": "Free hospital treatment worth up to ₹5 lakh per family per year at empanelled government and private hospitals. There is no premium to pay. It covers hospital stays, not routine outpatient visits.",
+      "benefit_amount": 500000,
+      "eligibility": {
+        "gender": "any",
+        "area": "both",
+        "caste_category": ["ANY"],
+        "purpose": ["health", "insurance"],
+        "conditions": [
+          "Families identified from the deprivation and occupational criteria of the Socio-Economic Caste Census 2011",
+          "Everyone aged 70 and above is covered regardless of income",
+          "Check your name on the beneficiary portal or at a Common Service Centre"
+        ]
+      },
+      "documents_required": ["Aadhaar", "ration card", "mobile number"],
+      "how_to_apply": "Check eligibility on the beneficiary portal, then get your Ayushman card made at any empanelled hospital or Common Service Centre.",
+      "application_url": "https://beneficiary.nha.gov.in/",
+      "helpline": "14555",
+      "source_url": "https://nha.gov.in/PM-JAY",
+      "last_verified": "2026-08-03",
+      "application_difficulty": 2
+    },
+    {
+      "id": "pm_mudra",
+      "name": "PM MUDRA Yojana",
+      "name_hi": "प्रधानमंत्री मुद्रा योजना",
+      "ministry": "Ministry of Finance",
+      "level": "central",
+      "states": ["ALL"],
+      "category": "business",
+      "benefit_type": "loan",
+      "benefit_text": "Business loans without collateral, in four steps: Shishu up to ₹50,000, Kishore above ₹50,000 and up to ₹5 lakh, Tarun above ₹5 lakh and up to ₹10 lakh, and Tarun Plus above ₹10 lakh and up to ₹20 lakh. Shishu borrowers who repay on time get a 2% interest subsidy for 12 months.",
+      "benefit_amount": 50000,
+      "eligibility": {
+        "gender": "any",
+        "area": "both",
+        "caste_category": ["ANY"],
+        "purpose": ["business"],
+        "conditions": [
+          "For a non-farm income-generating activity in manufacturing, trading or services",
+          "Tarun Plus is for borrowers who have taken and fully repaid an earlier Tarun loan"
+        ]
+      },
+      "documents_required": [
+        "Aadhaar",
+        "PAN",
+        "bank account",
+        "business plan or quotation",
+        "address proof"
+      ],
+      "how_to_apply": "Apply at any bank, small finance bank, or microfinance institution, or through the Jan Samarth portal.",
+      "application_url": "https://www.mudra.org.in",
+      "helpline": "1800-180-1111",
+      "source_url": "https://static.pib.gov.in/WriteReadData/specificdocs/documents/2024/oct/doc20241029426401.pdf",
+      "last_verified": "2026-08-03",
+      "application_difficulty": 3
+    },
+    {
+      "id": "pmegp",
+      "name": "Prime Minister's Employment Generation Programme (PMEGP)",
+      "name_hi": "प्रधानमंत्री रोजगार सृजन कार्यक्रम",
+      "ministry": "Ministry of Micro, Small and Medium Enterprises",
+      "level": "central",
+      "states": ["ALL"],
+      "category": "business",
+      "benefit_type": "subsidy",
+      "benefit_text": "A bank loan to start your own unit, with part of the project cost given as a subsidy you never repay. In rural areas the subsidy is 25% of project cost for general applicants and 35% for special categories including women and SC/ST applicants; in urban areas it is 15% and 25%. You put in 10% of the cost yourself, or 5% if you are in a special category.",
+      "benefit_amount": null,
+      "eligibility": {
+        "gender": "any",
+        "age_min": 18,
+        "area": "both",
+        "caste_category": ["ANY"],
+        "purpose": ["business"],
+        "conditions": [
+          "For a new unit — existing units are not covered",
+          "Aged 18 or above",
+          "A higher subsidy applies to women, SC, ST, OBC, minority, ex-servicemen and differently abled applicants"
+        ]
+      },
+      "documents_required": [
+        "Aadhaar",
+        "project report",
+        "caste certificate if claiming the special-category rate",
+        "education certificate",
+        "bank account"
+      ],
+      "how_to_apply": "Apply online on the KVIC PMEGP portal; the application goes to a district task force and then to a bank.",
+      "application_url": "https://www.kviconline.gov.in/pmegpeportal/pmegphome/index.jsp",
+      "helpline": "",
+      "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2158990",
+      "last_verified": "2026-08-03",
+      "application_difficulty": 4
+    },
+    {
+      "id": "stand_up_india",
+      "name": "Stand-Up India",
+      "name_hi": "स्टैंड अप इंडिया",
+      "ministry": "Ministry of Finance",
+      "level": "central",
+      "states": ["ALL"],
+      "category": "business",
+      "benefit_type": "loan",
+      "benefit_text": "A bank loan between ₹10 lakh and ₹1 crore to set up a new business in manufacturing, services, trading or an activity allied to agriculture. Repayment runs up to 7 years, and you can have up to 18 months before repayment starts.",
+      "benefit_amount": 1000000,
+      "eligibility": {
+        "gender": "any",
+        "age_min": 18,
+        "area": "both",
+        "caste_category": ["ANY"],
+        "any_of": [{ "caste_category": ["SC", "ST"] }, { "gender": "female" }],
+        "purpose": ["business"],
+        "conditions": [
+          "Only for SC or ST applicants, or for women applicants of any category",
+          "The business must be new — a greenfield enterprise",
+          "For a company, at least 51% must be held by the SC/ST or woman promoter"
+        ]
+      },
+      "documents_required": [
+        "Aadhaar",
+        "PAN",
+        "caste certificate where applicable",
+        "project report",
+        "bank account"
+      ],
+      "how_to_apply": "Register on the Stand-Up Mitra portal, which routes your application to banks.",
+      "application_url": "https://www.standupmitra.in",
+      "helpline": "",
+      "source_url": "https://www.standupmitra.in/Home/SchemeGuidelines",
+      "last_verified": "2026-08-03",
+      "application_difficulty": 4
+    },
+    {
+      "id": "pm_svanidhi",
+      "name": "PM Street Vendor's AtmaNirbhar Nidhi (PM SVANidhi)",
+      "name_hi": "पीएम स्वनिधि",
+      "ministry": "Ministry of Housing and Urban Affairs",
+      "level": "central",
+      "states": ["ALL"],
+      "category": "business",
+      "benefit_type": "loan",
+      "benefit_text": "Working capital loans for street vendors with no collateral, given in steps of ₹15,000, then ₹25,000, then ₹50,000 as you repay each one. It comes with an interest subsidy, a government-backed credit guarantee, and a UPI-linked RuPay credit card of up to ₹30,000.",
+      "benefit_amount": 15000,
+      "eligibility": {
+        "gender": "any",
+        "area": "urban",
+        "caste_category": ["ANY"],
+        "purpose": ["business"],
+        "conditions": [
+          "Street vendors in urban areas holding a certificate of vending or identified in the urban local body survey",
+          "The larger tranches unlock only after the earlier one is repaid"
+        ]
+      },
+      "documents_required": [
+        "Aadhaar",
+        "certificate of vending or letter of recommendation from the urban local body",
+        "bank account"
+      ],
+      "how_to_apply": "Apply through the PM SVANidhi portal, a Common Service Centre, or your urban local body.",
+      "application_url": "https://pmsvanidhi.mohua.gov.in/",
+      "helpline": "1800-11-1979",
+      "source_url": "https://pmsvanidhi.mohua.gov.in/Home/Schemes",
+      "last_verified": "2026-08-03",
+      "application_difficulty": 2
+    },
+    {
+      "id": "pmay_gramin",
+      "name": "Pradhan Mantri Awaas Yojana – Gramin (PMAY-G)",
+      "name_hi": "प्रधानमंत्री आवास योजना – ग्रामीण",
+      "ministry": "Ministry of Rural Development",
+      "level": "central",
+      "states": ["ALL"],
+      "category": "housing",
+      "benefit_type": "subsidy",
+      "benefit_text": "Assistance to build a pucca house of your own: ₹1.20 lakh in plain areas and ₹1.30 lakh in the North Eastern and hilly states including Jammu & Kashmir and Ladakh. You also get 90 to 95 days of unskilled labour wages through MGNREGS, and a further ₹12,000 towards building a toilet.",
+      "benefit_amount": 120000,
+      "eligibility": {
+        "gender": "any",
+        "area": "rural",
+        "caste_category": ["ANY"],
+        "purpose": ["housing"],
+        "conditions": [
+          "Rural families without a pucca house",
+          "Selection is made from the SECC 2011 and Awaas+ survey lists, approved by the Gram Sabha",
+          "If your name is not on the list, ask at the Gram Panchayat about the Awaas+ survey"
+        ]
+      },
+      "documents_required": [
+        "Aadhaar",
+        "job card number",
+        "bank account",
+        "consent for Aadhaar use"
+      ],
+      "how_to_apply": "Apply through your Gram Panchayat or on the PMAY-G portal; selection is verified by the Gram Sabha.",
+      "application_url": "https://pmayg.nic.in/",
+      "helpline": "1800-11-6446",
+      "source_url": "https://pib.gov.in/PressReleasePage.aspx?PRID=2113748",
+      "last_verified": "2026-08-03",
+      "application_difficulty": 4
+    }
+  ]
+}

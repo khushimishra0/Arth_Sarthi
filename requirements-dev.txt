@@ -1,0 +1,10 @@
+-r requirements.txt
+
+pytest
+pytest-asyncio
+ruff
+
+# Test-only. Generates the PDFs the loan router is exercised against, so the
+# text-vs-scanned decision is tested on real files rather than on a mock that
+# always agrees with us.
+reportlab

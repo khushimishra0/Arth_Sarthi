@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block body %}
+  <h1>{{ t('budget_page_title') }}</h1>
+  <p class="lede">{{ t('budget_page_lede') }}</p>
+
+  <form class="card" method="post" action="{{ url_for('budget_page') }}">
+    <label for="budget">{{ t('budget_text_label') }}</label>
+    <textarea id="budget" name="budget" placeholder="{{ t('budget_text_ph') }}"></textarea>
+
+    <p class="hint">{{ t('budget_preview') }}</p>
+    <canvas id="preview" height="220" aria-label="{{ t('budget_preview') }}"></canvas>
+
+    <button type="submit">{{ t('budget_submit') }}</button>
+  </form>
+
+  {#
+    The chart here is a *preview only* — instant feedback as the user types, drawn in
+    the browser with vendored Chart.js so it works with no internet. The real chart,
+    the verdicts and the savings goal are computed on the server when the form is
+    submitted; nothing here decides anything.
+  #}
+  <script src="{{ url_for('static', path='vendor/chart.umd.min.js') }}"></script>
+  <script>
+    (function () {
+      var input = document.getElementById("budget");
+      var canvas = document.getElementById("preview");
+      var INCOME = /^(income|salary|earn|earning|earnings)$/i;
+      var chart = null;
+
+      // Mirrors the server parser loosely: pull "<label> <amount>" pairs, drop the
+      // income line, and treat the rest as expense slices. The server has the last
+      // word — this is only to make the shape of the month visible while typing.
+      function parse(text) {
+        var pairs = [], m;
+        var re = /([A-Za-zऀ-ॿ]+)\s+₹?\s*([\d,]+(?:\.\d+)?)\s*(k|thousand|lakh)?/gi;
+        while ((m = re.exec(text)) !== null) {
+          var amount = parseFloat(m[2].replace(/,/g, ""));
+          var unit = (m[3] || "").toLowerCase();
+          if (unit === "k" || unit === "thousand") amount *= 1000;
+          if (unit === "lakh") amount *= 100000;
+          if (!isNaN(amount) && !INCOME.test(m[1])) pairs.push([m[1], amount]);
+        }
+        return pairs;
+      }
+
+      function draw() {
+        var pairs = parse(input.value);
+        var labels = pairs.map(function (p) { return p[0]; });
+        var data = pairs.map(function (p) { return p[1]; });
+        if (chart) { chart.data.labels = labels; chart.data.datasets[0].data = data; chart.update(); return; }
+        chart = new Chart(canvas, {
+          type: "doughnut",
+          data: { labels: labels, datasets: [{ data: data }] },
+          options: { plugins: { legend: { position: "bottom" } }, animation: false }
+        });
+      }
+
+      input.addEventListener("input", draw);
+      draw();
+    })();
+  </script>
+{% endblock %}

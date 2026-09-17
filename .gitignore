@@ -1,0 +1,20 @@
+.env
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Never commit user documents or the local database.
+data/*.db
+tests/fixtures/screenshots/
+tests/fixtures/loan_pdfs/
+
+# Project docs and spec — kept local, out of the repo (code only).
+.pytest-tmp/
+*.pdf
+ArthaSathi_Implementation_Plan.html
+BUILD_PLAN.md
+CLAUDE.md
+README.md

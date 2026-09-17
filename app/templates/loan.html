@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block body %}
+  <h1>{{ t('loan_page_title') }}</h1>
+  <p class="lede">{{ t('loan_page_lede') }}</p>
+
+  <form class="card" method="post" action="{{ url_for('loan_page') }}" enctype="multipart/form-data">
+    <label for="document">{{ t('loan_file_label') }}</label>
+    <input type="file" id="document" name="document" accept="application/pdf">
+
+    <button type="submit">{{ t('loan_submit') }}</button>
+  </form>
+{% endblock %}

@@ -1,0 +1,27 @@
+# ArthaSathi.ai — runtime dependencies
+# Phase 1 (finance engine) needs NONE of these; it is pure stdlib by design.
+
+# --- web + bot ---
+fastapi
+uvicorn[standard]
+python-telegram-bot[job-queue]~=21.0
+jinja2
+python-multipart
+
+# --- data ---
+sqlalchemy
+pydantic>=2
+pydantic-settings
+pyyaml
+
+# --- documents + images ---
+pdfplumber
+PyMuPDF
+Pillow
+
+# --- charts ---
+matplotlib
+
+# --- llm drivers ---
+google-genai        # Gemini: vision + native PDF
+httpx               # DeepSeek: plain OpenAI-compatible HTTP

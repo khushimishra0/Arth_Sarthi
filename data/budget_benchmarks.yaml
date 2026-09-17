@@ -1,0 +1,96 @@
+# Budget thresholds — §7 of the implementation plan.
+#
+# ---------------------------------------------------------------------------
+# These are NOT 50/30/20. That rule is written for high incomes and is quietly
+# insulting at ₹15,000 a month.
+# ---------------------------------------------------------------------------
+# 50/30/20 says "spend 50% on needs". At ₹15,000 that is ₹7,500 for rent, food,
+# transport and medicine combined, which is not advice, it is arithmetic that has
+# never met the person reading it. The bands below are set for the segments in
+# slide 9 — they assume housing and food genuinely take most of the money, and they
+# treat a 32% rent as "slightly high", not as a failure.
+#
+# `healthy_max` / `watch_max` are shares of monthly income, as percentages.
+# Anything above `watch_max` is danger.
+#
+# `under_min` is the unusual one: a share so *low* it is a finding. Food under 15%
+# of income at this level is not thrift, it is very likely someone eating less than
+# they should, and praising it would be the wrong thing to do.
+
+version: 1
+
+categories:
+  rent:
+    label: "Rent"
+    emoji: "🏠"
+    healthy_max: 30
+    watch_max: 40
+    note: "Hard to change quickly — flagged, but not nagged."
+  food:
+    label: "Food"
+    emoji: "🍲"
+    healthy_max: 30
+    watch_max: 40
+    under_min: 15
+    note: "Below 15% at this income is under-spending, not thrift."
+  travel:
+    label: "Travel"
+    emoji: "🚌"
+    healthy_max: 10
+    watch_max: 15
+    note: "Usually the most compressible line."
+  phone:
+    label: "Phone & data"
+    emoji: "📱"
+    healthy_max: 5
+    watch_max: 8
+  medical:
+    label: "Medical"
+    emoji: "💊"
+    healthy_max: 10
+    watch_max: 20
+    note: "A high share here is a reason for an emergency fund, not a criticism."
+  education:
+    label: "Education"
+    emoji: "📚"
+    healthy_max: 15
+    watch_max: 25
+    note: "Spending on schooling is an investment; it is flagged only to be visible."
+  emi:
+    label: "Loan EMIs"
+    emoji: "🏦"
+    healthy_max: 20
+    watch_max: 35
+    note: "Above 35% is the debt-trap threshold from slide 4."
+  other:
+    label: "Other"
+    emoji: "📦"
+    healthy_max: 15
+    watch_max: 25
+
+# Savings is inverted — a floor, not a ceiling. It is the single number the whole
+# feature exists to move.
+savings:
+  label: "Left over"
+  emoji: "💰"
+  healthy_min: 20
+  watch_min: 10
+
+# The goal ladder. Every rung gets a date computed from the actual surplus.
+goals:
+  buffer_amount: 5000            # the first win, deliberately within reach
+  emergency_fund_months: 3       # 3x monthly *expenses*, not income
+  # Below this monthly surplus, a savings plan is not credible and the ₹10/day
+  # challenge from slide 13 is offered instead.
+  minimum_credible_surplus: 500
+  daily_challenge_rupees: 10
+
+# Named only as safe places to park an emergency fund — standing constraint 4.
+# Government instruments only. Never a fund, never a stock, never a policy.
+safe_parking:
+  - name: "a recurring deposit at any bank or post office"
+    why: "money leaves your account on a fixed date, so it cannot be spent"
+  - name: "PPF"
+    why: "government-backed, tax-free, but locked in for 15 years"
+  - name: "Sukanya Samriddhi"
+    why: "if you have a daughter under 10 — the highest safe rate available"

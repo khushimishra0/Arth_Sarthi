@@ -1,0 +1,29 @@
+[project]
+name = "arthasathi"
+version = "0.1.0"
+description = "India's financial safety & decision intelligence layer — MVP prototype"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+    # Gate 6 bar 3 checks every scheme URL still resolves. Opt in deliberately:
+    #   python -m pytest -m network
+    # The default suite stays offline so it runs on a plane and in CI without egress.
+    "network: hits the real internet; excluded from the default run",
+]
+addopts = "-q -m 'not network'"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.flake8-bugbear]
+# FastAPI's dependency markers are meant to be called in argument defaults — that is
+# the framework's API, not the B008 mistake the rule is looking for.
+extend-immutable-calls = ["fastapi.Form", "fastapi.File", "fastapi.Query"]

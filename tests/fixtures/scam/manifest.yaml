@@ -1,0 +1,55 @@
+# Scam fixture index — see README.md in this directory.
+#
+# SEED ONLY. These six typed messages exist to prove the harness runs end to end
+# and to show the format. They are NOT the Phase 0.4 library: Gate 3 needs 30 real
+# screenshots (20 scam / 10 genuine), and the genuine ones are the hard half.
+#
+# Add image rows like this:
+#   - file: images/guaranteed_returns_hindi.jpg
+#     genuine: false
+#     expected_band: almost_certainly_scam
+#     note: "40% monthly, personal UPI, closes today"
+
+fixtures:
+  # --- scams -------------------------------------------------------------
+  - text: >-
+      🔥 GUARANTEED 40% monthly return! SEBI registered expert. Only 10 seats
+      left, joining closes 6 PM today. Pay ₹5,000 to UPI rajesh.k@okaxis
+    genuine: false
+    expected_band: almost_certainly_scam
+    note: "the §4 worked example"
+
+  - text: >-
+      Congratulations! You have won ₹10,00,000 in the KBC lucky draw. To claim
+      your prize pay a refundable processing fee of ₹4,500 today. Hurry, offer
+      closes tonight.
+    genuine: false
+    expected_band: high_risk
+    note: "advance fee plus urgency"
+
+  - text: >-
+      Work from home! Like videos and earn ₹3000 daily. Join the group and add 5
+      friends for level income. Turant paisa.
+    genuine: false
+    expected_band: high_risk
+    note: "task scam plus recruitment, Hinglish"
+
+  # --- genuine — the half that decides §13 -------------------------------
+  - text: >-
+      Dear Customer, Rs.5,000.00 has been debited from A/c XX1234 on 02-08-26.
+      Never share your OTP or PIN with anyone. Not you? Call 18001234567. -SBI
+    genuine: true
+    expected_band: likely_safe
+    note: "real bank SMS — contains every word the OTP rule looks for"
+
+  - text: >-
+      PM-KISAN: Rs 2,000 has been credited to your account under the 16th
+      instalment. Check status at pmkisan.gov.in
+    genuine: true
+    expected_band: likely_safe
+    note: "real government scheme, checkable gov.in link"
+
+  - text: "आपके खाते से 2,000 रुपये निकाले गए हैं। OTP कभी किसी को न बताएं।"
+    genuine: true
+    expected_band: likely_safe
+    note: "Hindi bank alert warning against sharing an OTP"

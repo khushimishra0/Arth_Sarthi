@@ -1,0 +1,77 @@
+# Market reference rates, used to tell a borrower where their offer actually sits.
+#
+# These are ANNUAL PERCENTAGE RATES on a reducing balance — the only basis on which
+# two loans can honestly be compared, and the basis the true APR from `finance.py`
+# is computed on.
+#
+# What this file is for: "28% is expensive but not predatory" is a useless sentence
+# without something to measure against. It is not a rate table for shopping — the
+# product never sends anyone to a named lender.
+#
+# ⚠ These are indicative bands for mid-2026 and they move. `last_reviewed` is shown
+# to the user with every comparison, so an out-of-date file is visible rather than
+# silently wrong. Re-check against RBI and a few lender websites before a demo.
+
+version: 1
+last_reviewed: "2026-08"
+
+# Where a rate sits relative to a type's bands decides the verdict wording.
+loan_types:
+  personal:
+    label: "personal loan"
+    bank: [11, 16]
+    # NBFC personal lending genuinely reaches the high twenties. §5 calls a 28.1%
+    # APR "expensive but not predatory", which is the right read — pricing it as
+    # predatory would leave nothing left to say about an actual 45% loan.
+    nbfc: [16, 30]
+  gold:
+    label: "gold loan"
+    bank: [9, 15]
+    nbfc: [15, 26]
+  home:
+    label: "home loan"
+    bank: [8.5, 11]
+    nbfc: [11, 14]
+  vehicle:
+    label: "vehicle loan"
+    bank: [9, 14]
+    nbfc: [14, 20]
+  business:
+    label: "business loan"
+    bank: [14, 20]
+    nbfc: [20, 30]
+  microfinance:
+    label: "microfinance loan"
+    bank: [20, 24]
+    nbfc: [24, 30]
+  other:
+    label: "loan"
+    bank: [11, 16]
+    nbfc: [16, 26]
+
+# The floor nobody should be pushed below, quoted so a borrower can see that a bad
+# formal loan is still usually better than the alternative they were considering.
+informal:
+  label: "moneylender"
+  range: [40, 60]
+
+# Cheaper routes worth asking about, by loan type. Categories of product, never a
+# named lender or scheme — standing constraint 4.
+alternatives:
+  personal:
+    - "a personal loan from the bank where your salary is credited"
+    - "a gold loan, if you have jewellery you are willing to pledge"
+    - "a loan against your PF or an advance from your employer"
+  gold:
+    - "a gold loan from a bank rather than a gold-loan company — usually several points cheaper"
+  business:
+    - "a MUDRA loan through a bank, which is meant for exactly this"
+    - "a cash-credit or overdraft limit against your current account"
+  vehicle:
+    - "the bank where you already hold an account, before the dealer's finance desk"
+  home:
+    - "a bank home loan, and ask about the interest subsidy if you are a first-time buyer"
+  microfinance:
+    - "a self-help group loan through your local bank branch"
+  other:
+    - "the bank where you already hold an account"

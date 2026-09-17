@@ -1,0 +1,56 @@
+{#
+  The answer, whatever feature produced it. Every block goes through Jinja2 with
+  autoescape on: scam detection quotes the suspicious message back, and that quoted
+  text is exactly where a `<script>` would hide. This template never marks anything
+  `safe` — the escaping is the point.
+#}
+{% extends "base.html" %}
+{% block title %}{{ t('brand') }}{% endblock %}
+{% block body %}
+  <div class="blocks">
+    {% for block in blocks %}
+      {% if block.kind == 'heading' %}
+        <h1>{{ block.text }}</h1>
+      {% elif block.kind == 'text' %}
+        <p>{{ block.text }}</p>
+      {% elif block.kind == 'bullets' %}
+        <ul>{% for item in block.items %}<li>{{ item }}</li>{% endfor %}</ul>
+      {% elif block.kind == 'steps' %}
+        <ol>{% for item in block.items %}<li>{{ item }}</li>{% endfor %}</ol>
+      {% elif block.kind == 'key_value' %}
+        <dl class="kv">
+          {% for key, value in block.pairs %}<dt>{{ key }}</dt><dd>{{ value }}</dd>{% endfor %}
+        </dl>
+      {% elif block.kind == 'divider' %}
+        <hr class="divider">
+      {% elif block.kind == 'disclaimer' %}
+        <p class="disclaimer">{{ block.text }}</p>
+      {% endif %}
+    {% endfor %}
+
+    {% for image in images %}
+      <figure>
+        <img class="chart" src="{{ image.data_uri }}" alt="{{ image.caption }}">
+        {% if image.caption %}<figcaption class="hint">{{ image.caption }}</figcaption>{% endif %}
+      </figure>
+    {% endfor %}
+
+    {% if links %}
+      <div class="links">
+        {% for link in links %}<a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.label }}</a>{% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  <hr class="divider">
+  <div class="links">
+    <a href="{{ url_for(feature ~ '_page') }}">{{ t('result_back') }}</a>
+  </div>
+
+  {# "Copy as text" — the plain-text render the bot would send, for pasting into a
+     WhatsApp to a relative. Kept in a <details> so it never clutters the answer. #}
+  <details style="margin-top:18px">
+    <summary class="hint">{{ t('copy_text') }}</summary>
+    <textarea readonly style="margin-top:8px">{{ plain }}</textarea>
+  </details>
+{% endblock %}

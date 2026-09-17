@@ -1,0 +1,162 @@
+{#
+  Base layout. Server-rendered Jinja2 with autoescape on — no npm, no build step.
+
+  The CSS is inline in one <style> block on purpose: the whole dashboard must work
+  from a laptop with no internet on demo day, and a single self-contained document is
+  the shortest path to that being true. It is ~200 lines, which is small enough to read
+  and small enough not to need a build pipeline.
+#}
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ t('brand') }}{% endblock %}</title>
+  <style>
+    :root {
+      --ink: #14213d;
+      --muted: #5b6478;
+      --line: #e3e7ef;
+      --bg: #f7f8fc;
+      --card: #ffffff;
+      --brand: #1d3557;
+      --accent: #2a9d8f;
+      --danger: #c1121f;
+      --warn: #e07a00;
+      --ok: #2f9e44;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Devanagari", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+    a { color: var(--brand); }
+    header.top {
+      background: var(--brand);
+      color: #fff;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    header.top a { color: #fff; text-decoration: none; }
+    .brand { font-weight: 700; font-size: 1.15rem; }
+    nav.top-nav { display: flex; gap: 14px; flex-wrap: wrap; margin-left: auto; }
+    nav.top-nav a { opacity: .85; font-size: .95rem; }
+    nav.top-nav a:hover, nav.top-nav a.active { opacity: 1; text-decoration: underline; }
+    main { max-width: 860px; margin: 0 auto; padding: 24px 18px 64px; }
+    h1 { font-size: 1.6rem; margin: 0 0 6px; }
+    h2 { font-size: 1.15rem; margin: 26px 0 10px; }
+    .lede { color: var(--muted); margin: 0 0 24px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+    .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .feature {
+      display: block;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .feature:hover { border-color: var(--brand); }
+    .feature .emoji { font-size: 1.7rem; display: block; margin-bottom: 6px; }
+    .feature strong { display: block; margin-bottom: 4px; }
+    .feature span.desc { color: var(--muted); font-size: .92rem; }
+    label { display: block; font-weight: 600; margin: 14px 0 4px; font-size: .95rem; }
+    input[type=text], input[type=number], select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      font: inherit;
+      background: #fff;
+    }
+    textarea { min-height: 120px; resize: vertical; }
+    input[type=file] { width: 100%; padding: 10px 0; font: inherit; }
+    button {
+      margin-top: 18px;
+      padding: 11px 20px;
+      font: inherit;
+      font-weight: 600;
+      color: #fff;
+      background: var(--brand);
+      border: 0;
+      border-radius: 9px;
+      cursor: pointer;
+    }
+    button:hover { background: #16294a; }
+    .hint { color: var(--muted); font-size: .88rem; margin-top: 6px; }
+    .disclaimer { color: var(--muted); font-size: .88rem; font-style: italic; }
+    .divider { border: 0; border-top: 1px solid var(--line); margin: 18px 0; }
+    .kv { margin: 0; }
+    .kv dt { font-weight: 600; margin-top: 10px; }
+    .kv dd { margin: 2px 0 0; }
+    .blocks ul { padding-left: 22px; }
+    .blocks ol { padding-left: 22px; }
+    .blocks li { margin: 6px 0; }
+    .blocks h3 { font-size: 1.05rem; margin: 20px 0 8px; }
+    .chart { max-width: 100%; height: auto; border-radius: 10px; }
+    .links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    .links a {
+      padding: 9px 14px;
+      border: 1px solid var(--brand);
+      border-radius: 9px;
+      text-decoration: none;
+      font-size: .93rem;
+    }
+    .banner {
+      border-left: 4px solid var(--warn);
+      background: #fff8ec;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-size: .93rem;
+    }
+    .banner.err { border-color: var(--danger); background: #fff1f2; }
+    footer.foot {
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: .85rem;
+      padding: 18px;
+      text-align: center;
+    }
+    @media (max-width: 560px) {
+      main { padding: 18px 14px 48px; }
+      h1 { font-size: 1.35rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="{{ url_for('home') }}">🪙 {{ t('brand') }}</a>
+    <nav class="top-nav">
+      <a href="{{ url_for('scam_page') }}">{{ t('nav_scam') }}</a>
+      <a href="{{ url_for('loan_page') }}">{{ t('nav_loan') }}</a>
+      <a href="{{ url_for('schemes_page') }}">{{ t('nav_schemes') }}</a>
+      <a href="{{ url_for('budget_page') }}">{{ t('nav_budget') }}</a>
+      <a href="{{ url_for('demo_page') }}">{{ t('nav_demo') }}</a>
+      {# Language toggle keeps you on the page you are reading. #}
+      <a href="?lang={{ 'en' if lang == 'hi' else 'hi' }}">{{ 'English' if lang == 'hi' else 'हिंदी' }}</a>
+    </nav>
+  </header>
+
+  <main>
+    {% block body %}{% endblock %}
+  </main>
+
+  <footer class="foot">
+    {{ t('footer') }}
+  </footer>
+</body>
+</html>

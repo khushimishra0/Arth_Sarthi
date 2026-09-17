@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block body %}
+  <h1>{{ t('home_title') }}</h1>
+  <p class="lede">{{ t('home_lede') }}</p>
+
+  <div class="grid">
+    <a class="feature" href="{{ url_for('scam_page') }}">
+      <span class="emoji">🚩</span>
+      <strong>{{ t('card_scam_title') }}</strong>
+      <span class="desc">{{ t('card_scam_desc') }}</span>
+    </a>
+    <a class="feature" href="{{ url_for('loan_page') }}">
+      <span class="emoji">📄</span>
+      <strong>{{ t('card_loan_title') }}</strong>
+      <span class="desc">{{ t('card_loan_desc') }}</span>
+    </a>
+    <a class="feature" href="{{ url_for('schemes_page') }}">
+      <span class="emoji">🏛️</span>
+      <strong>{{ t('card_schemes_title') }}</strong>
+      <span class="desc">{{ t('card_schemes_desc') }}</span>
+    </a>
+    <a class="feature" href="{{ url_for('budget_page') }}">
+      <span class="emoji">💰</span>
+      <strong>{{ t('card_budget_title') }}</strong>
+      <span class="desc">{{ t('card_budget_desc') }}</span>
+    </a>
+  </div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block body %}
+  <h1>{{ t('scam_page_title') }}</h1>
+  <p class="lede">{{ t('scam_page_lede') }}</p>
+
+  <form class="card" method="post" action="{{ url_for('scam_page') }}" enctype="multipart/form-data">
+    <label for="message">{{ t('scam_text_label') }}</label>
+    <textarea id="message" name="message" placeholder="{{ t('scam_text_ph') }}"></textarea>
+
+    <label for="screenshot">{{ t('scam_image_label') }}</label>
+    <input type="file" id="screenshot" name="screenshot" accept="image/*">
+
+    <button type="submit">{{ t('scam_submit') }}</button>
+  </form>
+{% endblock %}

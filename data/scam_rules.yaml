@@ -1,0 +1,234 @@
+# ArthaSathi — red-flag rules for scam detection (§4 of the implementation plan)
+#
+# Weights and copy live here so they can be tuned without touching code. Field logic
+# that a regex cannot express (comparing a promised return against a threshold,
+# noticing a *missing* registration number) lives in `app/features/scam/rules.py`
+# and is referenced below by `check:`.
+#
+# ---------------------------------------------------------------------------
+# The `exclude` lists are the most important thing in this file.
+# ---------------------------------------------------------------------------
+# A real bank SMS says "never share your OTP with anyone". A scam says "share the
+# OTP to verify". Both contain "share" and "OTP". Without exclusions the genuine
+# message scores 25 on the single heaviest rule in the set, and §13's bar — zero
+# genuine messages above 50 — is missed on the most common message in India.
+#
+# A false positive here is not a smaller version of a false negative. Telling
+# someone their real bank is a scam teaches them to ignore us, and the next warning
+# is the one that mattered.
+#
+# `sentence` is what the user reads. It explains the rule, not the score — a user
+# told "91%" learns nothing; a user told "guaranteed returns are always a lie" has
+# been taught something they can use for the rest of their life. `{match}` is
+# replaced with the text that fired the rule.
+
+version: 1
+
+rules:
+  - id: guaranteed_return
+    weight: 25
+    title: Guaranteed returns
+    patterns:
+      # Nouns are plural-tolerant: "guaranteed returns" is the phrase people
+      # actually write, and \breturn\b does not match it.
+      - '\b(guaranteed|guarantee|assured|assure[ds]?)\b.{0,40}\b(returns?|profits?|incomes?|amounts?|money|payouts?)\b'
+      - '\b(returns?|profits?|incomes?|payouts?)\b.{0,40}\b(guaranteed|assured|100%\s*(safe|sure))\b'
+      - '\b100\s*%\s*(safe|secure|guaranteed|sure|risk[\s-]?free)\b'
+      - '\bno\s+risk\b|\brisk[\s-]?free\b|\bzero\s+risk\b'
+      - '\bfixed\s+(profit|return|income|daily\s+income)\b'
+      - 'गारंटी|गारन्टी|पक्का\s*(मुनाफ़ा|मुनाफा|रिटर्न|फायदा)|निश्चित\s*(लाभ|रिटर्न)'
+      - '\b(pakka|guaranteed)\s*(profit|munafa|return)\b'
+    exclude:
+      # Deposit products may lawfully state a fixed rate; the scam signal is a
+      # guaranteed *return on investment*, not a bank quoting an FD rate.
+      - '\b(fixed\s+deposit|FD|recurring\s+deposit|RD|PPF|NSC|sukanya)\b'
+      - '\bcapital\s+guarantee\s+scheme\s+regulated\b'
+    sentence: >-
+      It promises {match}. No legal investment in India can guarantee a return —
+      SEBI forbids it. Anyone who guarantees profit is either breaking the law or
+      lying to you.
+
+  - id: implausible_return
+    weight: 20
+    title: Impossible return rate
+    check: implausible_return
+    patterns:
+      - '\bdouble\s+(your\s+)?(money|investment|amount|capital)\b'
+      - '\b(paisa|paise|money)\s*double\b|\bडबल\b.{0,15}(पैसा|पैसे|रकम)'
+      # \d{1,3}: "5% daily" is the common phrasing and is far worse than "50% yearly".
+      - '\b\d{1,3}(\.\d+)?\s*%\s*(per\s*)?(day|daily|week|weekly|month|monthly|रोज|प्रतिदिन)\b'
+      - '\bdaily\s+(profits?|returns?|income|payouts?)\s+of\b'
+    sentence: >-
+      It promises {match}. For scale: a good mutual fund returns about 12% in a
+      *year*. Anything promising this much, this fast, is paying old members with
+      new members' money until it collapses.
+
+  - id: no_registration
+    weight: 18
+    title: Claims to be registered but shows no number
+    check: no_registration
+    sentence: >-
+      It calls itself {match} but shows no registration number. Every real SEBI
+      adviser must display theirs on every communication. You can check any number
+      free at sebi.gov.in — a real one will be there.
+
+  - id: manufactured_urgency
+    weight: 15
+    title: Manufactured urgency
+    patterns:
+      - '\bonly\s+(today|tonight|\d+\s+(seats?|slots?|spots?|places?|left))\b'
+      - '\b(last|final)\s+\d+\s+(seats?|slots?|spots?|hours?|minutes?|chance)\b'
+      - '\b(closes|closing|expires|expiring|ends|ending)\s+(in|at|by|today|tonight)\b'
+      - '\bhurry\b|\bact\s+(now|fast)\b|\blimited\s+(time|period|seats|offer)\b'
+      - '\bबस\s*आज\b|\bजल्दी\s*कर(ें|ो)\b|\bआख़िरी\s*(मौका|मौक़ा)\b|\bसीमित\s*समय\b'
+      - '\bjaldi\s+kar(o|en)\b|\bturant\b'
+    exclude:
+      # A genuine bill or statement has a due date. That is a deadline, not pressure.
+      - '\b(due\s+date|last\s+date\s+for\s+payment|bill\s+due|premium\s+due|EMI\s+due)\b'
+      - '\b(offer\s+valid\s+till|validity)\b.{0,20}\b(20\d\d)\b'
+    sentence: >-
+      It pressures you with {match}. Urgency exists to stop you thinking or asking
+      someone you trust. A genuine opportunity is still there tomorrow — that is
+      how you tell the difference.
+
+  - id: personal_payment_handle
+    weight: 15
+    title: Payment to a personal account
+    check: personal_payment_handle
+    sentence: >-
+      It asks you to pay {match}, which is an individual's handle, not a registered
+      company account. Money sent to a personal UPI ID is very hard to trace and
+      almost never recovered.
+
+  - id: otp_or_remote_access
+    weight: 25
+    title: Asks for your OTP or screen access
+    patterns:
+      - '\b(share|send|tell|give|provide|forward|batao?|bhejo?)\b.{0,25}\b(OTP|O\.T\.P|one[\s-]?time[\s-]?password|PIN|CVV|password)\b'
+      - '\b(OTP|PIN|CVV)\b.{0,25}\b(share|send|tell|batao|bhejo|forward)\b'
+      - '\b(anydesk|any\s?desk|teamviewer|team\s?viewer|quick\s?support|rustdesk)\b'
+      - '\b(screen[\s-]?shar|share\s+your\s+screen|remote\s+access)\w*\b'
+      - '\bverify\s+your\s+(card|debit\s+card|credit\s+card|account)\b.{0,30}\b(number|CVV|PIN|details)\b'
+      - '\bOTP\s*(बताइए|बताओ|भेजो|भेजिए)\b'
+    exclude:
+      # This is what a genuine bank message says. It must never fire this rule.
+      - '(never|do\s*not|don.?t|no\s+one|nobody|kabhi\s+nahi)\b.{0,40}\b(share|disclose|tell|reveal)\b.{0,25}\b(OTP|PIN|CVV|password)'
+      - '\b(OTP|PIN|CVV|password)\b.{0,40}\b(never|do\s*not|don.?t)\s+shar'
+      - '\b(bank|we|nobody)\s+(will\s+)?never\s+ask'
+      - 'कभी\s*(भी\s*)?(न|नहीं)\s*(बताएं|बताइए|शेयर)'
+    sentence: >-
+      It asks for {match}. Nobody legitimate ever needs your OTP, PIN, CVV or
+      remote access to your phone — not your bank, not the police, not a government
+      officer. Anyone asking is trying to take your money, without exception.
+
+  - id: recruitment_mechanics
+    weight: 12
+    title: You have to recruit other people
+    patterns:
+      - '\b(add|join|invite|refer)\s+\d+\s+(friends?|people|members?|persons?)\b'
+      - '\brefer\s+(and|&)\s+earn\b|\breferral\s+(bonus|income|commission)\b'
+      - '\b(join|add\s+you\s+to)\s+(the|our|this)\s+(group|team|channel)\b.{0,40}\b(earn|income|profit|commission)\b'
+      - '\b(downline|upline|level\s+income|matrix\s+plan|binary\s+plan|MLM)\b'
+      - '\b(\d+\s*लोग(ों)?\s*को\s*जोड़)\w*'
+    sentence: >-
+      Your earnings depend on {match}. That is the structure of a chain scheme: the
+      money comes from the people you bring in, not from any business. Chain schemes
+      are illegal in India, and everyone who joins near the end loses.
+
+  - id: shortened_or_lookalike_link
+    weight: 12
+    title: Disguised or lookalike link
+    check: suspicious_link
+    sentence: >-
+      The link {match} hides where it really goes, or is a near-copy of a real
+      bank's address. Type your bank's address yourself instead of tapping a link —
+      one changed letter is the entire trick.
+
+  - id: fake_authority
+    weight: 14
+    title: Fake government or RBI backing
+    check: fake_authority
+    patterns:
+      # "registered" is deliberately absent: an adviser claiming SEBI *registration*
+      # without a number is rule `no_registration`. Counting it here too would
+      # charge one lie twice.
+      - '\b(RBI|SEBI|IRDAI|NPCI)\s*(approved|certified|authorised|authorized|backed)\b'
+      - '\b(govt|government)\s+of\s+india\s+(scheme|approved|backed|certified)\b'
+      - '\b(sarkari|सरकारी)\s*(yojana|योजना|scheme)\b.{0,40}\b(profit|return|invest|मुनाफ़ा)\b'
+      - '\bPM\s+\w+\s+yojana\b.{0,40}\b(register|pay|fee|charge)\b'
+    exclude:
+      # A real scheme cites its portal or a scheme code. Those are checkable.
+      - '\b(gov\.in|nic\.in|rbi\.org\.in|sebi\.gov\.in|india\.gov\.in)\b'
+    sentence: >-
+      It claims {match} with nothing you can check — no scheme code, no gov.in link.
+      Real government schemes are always listed on a gov.in website and never need
+      you to pay a middleman to apply.
+
+  - id: celebrity_endorsement
+    weight: 10
+    title: Celebrity endorsement
+    patterns:
+      - '\b(ambani|adani|ratan\s+tata|elon\s+musk|virat\s+kohli|dhoni|sachin|amitabh|shah\s+rukh|akshay\s+kumar)\b'
+      - '\b(as\s+seen\s+on|featured\s+(on|in))\s+(shark\s+tank|aaj\s+tak|zee|ndtv|cnbc)\b'
+      - '\b(celebrity|actor|cricketer|star)\s+(endorsed|backed|recommends?|invested)\b'
+    sentence: >-
+      It uses {match} to make itself look credible. These endorsements are almost
+      always fabricated, and the named people have publicly disowned them. A famous
+      face is not a licence — check the registration number instead.
+
+  - id: advance_fee
+    weight: 18
+    title: Pay first to receive more
+    patterns:
+      - '\b(pay|deposit|send|transfer|submit)\b.{0,40}\b(processing|registration|activation|clearance|customs|GST|tax|handling|refundable)\s+(fee|charge|amount|payment)\b'
+      # \w+\s+ absorbs an adjective: "a small *refundable* deposit".
+      - '\b(small|token|nominal|minimum)\s+(\w+\s+)?(fee|amount|payment|deposit)\b.{0,50}\b(receive|claim|release|unlock|get)\b'
+      - '\b(you\s+have\s+won|winner|lottery|lucky\s+draw|prize)\b.{0,80}\b(pay|fee|charge|deposit)\b'
+      - '\b(इनाम|लॉटरी|पुरस्कार)\b.{0,60}\b(शुल्क|फीस|भुगतान)\b'
+    sentence: >-
+      It asks you to pay {match} before you receive anything. No real prize, refund,
+      loan or job ever requires you to send money first. This is the oldest pattern
+      there is, and the "fee" is the entire scam.
+
+  - id: job_task_scam
+    weight: 16
+    title: Task or work-from-home job scam
+    patterns:
+      - '\b(work|job|earn)\s+from\s+home\b.{0,60}\b(daily|per\s+day|₹|rs\.?\s*\d)'
+      - '\b(like|rate|review)\s+(videos?|hotels?|products?|posts?)\b.{0,40}\b(earn|paid|payment|₹|rs\.?\s*\d)'
+      - '\b(part[\s-]?time|simple|easy)\s+(job|task|work)\b.{0,50}\b(₹|rs\.?\s*\d{3,})'
+      - '\b(daily|per\s*day)\s+(payout|payment|income)\s+of\s+(₹|rs\.?\s*\d)'
+      - '\bघर\s*बैठ(े|कर)\b.{0,40}\b(कमा|कमाई|पैसे)\b'
+    sentence: >-
+      It offers {match}. Task scams pay small amounts at first so you trust them,
+      then ask you to deposit your own money to "unlock" bigger tasks — and that
+      deposit is the point. No real employer pays you to like videos.
+
+  - id: loan_app_coercion
+    weight: 18
+    title: Predatory instant-loan app
+    patterns:
+      - '\b(instant|quick|turant|1\s*minute|5\s*minute)\s+loan\b.{0,50}\b(no\s+documents?|without\s+documents?|no\s+KYC|bina\s+document)\b'
+      - '\b(no|zero|without)\s+(documents?|paperwork|CIBIL|credit\s+check)\b.{0,40}\bloan\b'
+      - '\b(access|allow|permission)\b.{0,30}\b(contacts?|contact\s+list|gallery|photos|phonebook)\b'
+      - '\b(we\s+will|shall)\s+(inform|message|call|contact)\s+(all\s+)?your\s+(contacts?|family|friends|relatives)\b'
+      - '\b(defame|shame|viral|photo\s+will\s+be\s+sent)\b'
+    sentence: >-
+      It offers {match}. Apps that lend without documents make their money from
+      penalties and from your contact list — they threaten to message your family
+      when you cannot pay. An RBI-registered lender always verifies you first.
+
+  - id: unsolicited_contact
+    weight: 8
+    title: Unsolicited approach
+    check: unsolicited_contact
+    patterns:
+      - '\byou\s+(have\s+been|were)\s+(added|selected|chosen)\b.{0,40}\b(group|scheme|program|list)\b'
+      - '\b(congratulations|congrats|badhai|बधाई)\b.{0,50}\b(selected|won|chosen|eligible)\b'
+      - '\bI\s+got\s+your\s+(number|contact)\s+from\b'
+    exclude:
+      # Transaction alerts are unsolicited by nature and entirely normal.
+      - '\b(debited|credited|withdrawn|deposited|balance|txn|transaction|statement|OTP\s+for)\b'
+    sentence: >-
+      It arrived {match}. Nobody genuine finds you at random to make you money.
+      Real opportunities do not begin with a stranger's message.
